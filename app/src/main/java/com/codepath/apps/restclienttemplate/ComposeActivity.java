@@ -3,11 +3,15 @@ package com.codepath.apps.restclienttemplate;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
@@ -25,6 +29,7 @@ public class ComposeActivity extends AppCompatActivity {
 
     EditText etCompose;
     Button btnTweet;
+    TextView tvCharacters;
 
     TwitterClient client;
 
@@ -34,11 +39,40 @@ public class ComposeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_compose);
         etCompose = findViewById(R.id.etCompose);
         btnTweet = findViewById(R.id.btnTweet);
-
+        tvCharacters = findViewById(R.id.tvCharacters);
         client = TwitterApp.getRestClient(this);
+        tvCharacters.setText("0/" + MAX_TWEET_LENGTH);
+
+
+
+        // Adds a listener on EditText
+        etCompose.addTextChangedListener(new TextWatcher() {
+            // Initializes variable to track length of user's tweet in editText
+            int tweetLength;
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tweetLength = s.length();
+                Log.i(TAG, "The length of the tweet is: " + tweetLength);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                tvCharacters.setText(tweetLength + "/" + MAX_TWEET_LENGTH);
+                if (tweetLength > MAX_TWEET_LENGTH) {
+                    Log.i(TAG, "The length of the tweet exceeds the max number of characters");
+                    tvCharacters.setTextColor(Color.RED);
+                } else {
+                    tvCharacters.setTextColor(Color.BLACK);
+                }
+            }
+        });
 
         // Add a click listener on button
-
         btnTweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
